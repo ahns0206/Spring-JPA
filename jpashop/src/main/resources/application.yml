@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create # 실행시 자동으로 DB 다 날리고 테이블 재생성
+    properties:
+      hibernate:
+        # show_sql: true # sysout log
+        format_sql: true
+        default_batch_fetch_size: 100
+
+logging:
+  level:
+    org.hibernate.SQL: debug # log
+    org.hibernate.type: trace # 바인딩되는 쿼리 파라미터 노출
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+spring.h2.console.enable: true

@@ -1,0 +1,16 @@
+# 스프링부트는 default로 memmory db 별도로 띄워서 테스트 케이스 실행하기에 생략 가능
+# spring:
+#   datasource:
+#     url: jdbc:h2:mem:test # memmory 모드로 동작
+#     username: sa
+#     password:
+#     driver-class-name: org.h2.Driver
+
+# jpa:
+#   hibernate:
+#     ddl-auto: create_drop # 실행시 자동으로 DB 날리고 테이블 재생성 + 종료시 DB 날림
+
+logging:
+  level:
+    org.hibernate.SQL: debug # log
+    org.hibernate.type: trace # 바인딩되는 쿼리 파라미터 노출
