@@ -1,5 +1,6 @@
 package study.datajpa.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
+    @JsonIgnore
     private List<Member> members = new ArrayList<>();
 
     public Team(String name) {

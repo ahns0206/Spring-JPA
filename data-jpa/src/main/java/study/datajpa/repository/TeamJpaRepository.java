@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository //component scan + jpa error to java error 변경
 public class TeamJpaRepository {
 
     @PersistenceContext

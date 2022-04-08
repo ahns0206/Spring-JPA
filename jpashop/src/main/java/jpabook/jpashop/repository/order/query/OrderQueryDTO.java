@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(of = "orderId")
+@EqualsAndHashCode(of = "orderId") // collect groupingBy 시 orderId 기준으로 묶음
 public class OrderQueryDTO {
 
     private Long orderId;

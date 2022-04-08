@@ -10,9 +10,9 @@ spring:
       ddl-auto: create # 실행시 자동으로 DB 다 날리고 테이블 재생성
     properties:
       hibernate:
-        # show_sql: true # sysout log
+        # show_sql: true # system out log
         format_sql: true
-        default_batch_fetch_size: 100
+        default_batch_fetch_size: 100 # 페이징 최적화 (inquery 내 값 개수)
 
 logging:
   level:

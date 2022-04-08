@@ -68,6 +68,36 @@ public class OrderRepository {
         return query.getResultList();
     }
 
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                        "select o from Order o " +
+                                "join fetch o.member m " +
+                                "join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithItem() {
+        // distinct 없으면 orderItems의 item 수만큼 order 수가 증가함
+        // distinct : DB 쿼리 내 distinct(모든 행의 컬럼값이 같아야만 distinct 됨) + 컬렉션에 담을때 엔티티의 id가 같으면 중복 제거해서 엔티티 저장
+        return em.createQuery(
+                        "select distinct o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d" +
+                                " join fetch o.orderItems oi" +
+                                " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery2(int offset, int limit){
+        return em.createQuery(
+                        "select o from Order o " +
+                                "join fetch o.member m " +
+                                "join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
     // queryDSL로 동적쿼리 생성 (추천)
     public List<Order> findAll(OrderSearch orderSearch) {
         JPAQueryFactory query = new JPAQueryFactory(em);
@@ -81,34 +111,6 @@ public class OrderRepository {
                     .limit(1000)
                     .fetch();
 
-    }
-
-    public List<Order> findAllWithMemberDelivery() {
-        return em.createQuery(
-                "select o from Order o " +
-                "join fetch o.member m " +
-                "join fetch o.delivery d", Order.class)
-                .getResultList();
-    }
-
-    public List<Order> findAllWithItem() {
-        return em.createQuery(
-                "select distinct o from Order o" +
-                " join fetch o.member m" +
-                " join fetch d.delivery d" +
-                " join fetch o.orderItems oi" +
-                " join fetch oi.item i", Order.class)
-                .getResultList();
-    }
-
-    public List<Order> findAllWithMemberDelivery2(int offset, int limit){
-        return em.createQuery(
-                "select o from Order o " +
-                "join fetch o.member m " +
-                "join fetch o.delivery d", Order.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
-                .getResultList();
     }
 
     private BooleanExpression nameLike(String userName) {

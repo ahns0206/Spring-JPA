@@ -25,11 +25,9 @@ public class MemberServiceTest {
 
     @Autowired EntityManager em;
 
-    @Autowired
-    MemberService memberService;
+    @Autowired MemberService memberService;
 
-    @Autowired
-    MemberRepository memberRepository;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     // @Rollback(false) // DB에 강제 commit

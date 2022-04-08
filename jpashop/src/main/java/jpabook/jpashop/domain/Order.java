@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -85,13 +87,12 @@ public class Order {
      * 전체 주문 가격 조회
      */
     public int getTotalPrice() {
-        /*
-        int totalPrice = 0;
+        /*int totalPrice = 0;
         for(OrderItem orderItem : orderItems) {
             totalPrice += orderItem.getTotalPrice();
         }
-        return totalPrice;
-         */
+        return totalPrice;*/
+
         return orderItems.stream()
                 .mapToInt(OrderItem::getTotalPrice)
                 .sum();

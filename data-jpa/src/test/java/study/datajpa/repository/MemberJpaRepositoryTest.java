@@ -1,6 +1,5 @@
 package study.datajpa.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,24 +7,34 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
-import study.datajpa.repository.MemberJpaRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+@Rollback(value = false) //db에 값 확인하려면 추가
 class MemberJpaRepositoryTest {
 
     @PersistenceContext
     EntityManager em;
 
+    // 수정자 사용 주입
+//    private MemberJpaRepository memberJpaRepository;
+//    public void setService(MemberJpaRepository memberJpaRepository) {
+//        this.memberJpaRepository = memberJpaRepository;
+//    }
+
+    // 생성자 사용 주입 (테스트 이외 사용)
+//    private final MemberJpaRepository memberJpaRepository;
+//    public MemberJpaRepositoryTest(MemberJpaRepository memberJpaRepository) {
+//        this.memberJpaRepository = memberJpaRepository;
+//    }
+
+    // 필드 주입 (테스트시에만 사용, 순환참조 및 테스트시 사용 못함)
     @Autowired
     private MemberJpaRepository memberJpaRepository;
 
@@ -47,13 +56,13 @@ class MemberJpaRepositoryTest {
         em.persist(member4);
 
         //초기화
-        em.flush();
-        em.clear();
+        em.flush(); // db 인서트 쿼리 실행
+        em.clear(); // 영속성 컨텍스트 초기화
 
         //확인
         List<Member> members = em.createQuery(
-                "select m from Member m " +
-                        "join fetch m.team t", Member.class)
+                "select m from Member m" +
+                        " join fetch m.team t", Member.class)
                 .getResultList();
 
         for (Member member : members) {
@@ -92,8 +101,34 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
+    public void findByUsernameAndAgeGreaterThen() {
+        Member m1 = new Member("member", 10);
+        Member m2 = new Member("member", 20);
+        memberJpaRepository.save(m1);
+        memberJpaRepository.save(m2);
+
+        List<Member> result = memberJpaRepository.findByUsernameAndAgeGreaterThen("member", 15);
+        assertThat(result.get(0).getUsername()).isEqualTo("member");
+        assertThat(result.get(0).getAge()).isEqualTo(20);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testNamedQuery() {
+        Member m1 = new Member("member", 10);
+        Member m2 = new Member("member", 20);
+        memberJpaRepository.save(m1);
+        memberJpaRepository.save(m2);
+
+        List<Member> result = memberJpaRepository.findByUsername("member");
+        assertThat(result.get(0).getUsername()).isEqualTo("member");
+        assertThat(result.get(1).getUsername()).isEqualTo("member");
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
     public void paging() {
-        //given
+        // given
         memberJpaRepository.save(new Member("member1", 10));
         memberJpaRepository.save(new Member("member2", 10));
         memberJpaRepository.save(new Member("member3", 10));
@@ -108,7 +143,7 @@ class MemberJpaRepositoryTest {
         List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
         long totalCount = memberJpaRepository.tatalCount(age);
 
-        //then1
+        //then
         assertThat(members.size()).isEqualTo(3);
         assertThat(totalCount).isEqualTo(6);    
     }
@@ -124,8 +159,10 @@ class MemberJpaRepositoryTest {
 
         //when
         int resultCount = memberJpaRepository.bulkAgePlus(20);
+        em.clear();
 
         //then
-        assertThat(resultCount).isEqualTo(3);
+        List<Member> members = memberJpaRepository.findByUsername("member3");
+        assertThat(members.get(0).getAge()).isEqualTo(21);
     }
 }

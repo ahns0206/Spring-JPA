@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import study.datajpa.entity.Member;
 
@@ -8,6 +9,9 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
+/*
+* EntityManager 사용 JPQL
+* */
 @Repository
 public class MemberJpaRepository {
 
@@ -42,8 +46,21 @@ public class MemberJpaRepository {
         return em.find(Member.class, id);
     }
 
+    public List<Member> findByUsernameAndAgeGreaterThen(String name, int age) {
+        return em.createQuery("select m from Member m where m.username = :username and m.age > :age")
+                .setParameter("username", name)
+                .setParameter("age", age)
+                .getResultList();
+    }
+
+    public List<Member> findByUsername(String name) {
+        return em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", name)
+                .getResultList();
+    }
+
     public List<Member> findByPage(int age, int offset, int limit) {
-        return em.createQuery("select m from Member m where age=:age order by m.username asc", Member.class)
+        return em.createQuery("select m from Member m where m.age = :age order by m.username asc", Member.class)
                 .setParameter("age", age)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
@@ -51,11 +68,12 @@ public class MemberJpaRepository {
     }
 
     public long tatalCount(int age) {
-        return em.createQuery("select count(m) from Member m where age=:age", Long.class)
+        return em.createQuery("select count(m) from Member m where m.age = :age", Long.class)
                 .setParameter("age", age)
                 .getSingleResult();
     }
 
+    @Modifying(clearAutomatically = true) // executeUpdate() & em.clear() 실행
     public int bulkAgePlus(int age) {
         return em.createQuery("update Member m set m.age = m.age+1" +
                 " where m.age >= :age")
