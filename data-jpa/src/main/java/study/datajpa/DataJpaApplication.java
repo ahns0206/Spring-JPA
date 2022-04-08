@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @EnableJpaAuditing
 @SpringBootApplication
-//@EnableJpaRepositories(basePackages = "study.datajpa.repository")
 public class DataJpaApplication {
 
 	public static void main(String[] args) {
@@ -21,6 +20,7 @@ public class DataJpaApplication {
 
 	@Bean
 	public AuditorAware<String> auditorProvied() {
+		// TODO: 세션 userid 넣기
 		return () -> Optional.of(UUID.randomUUID().toString());
 	}
 }

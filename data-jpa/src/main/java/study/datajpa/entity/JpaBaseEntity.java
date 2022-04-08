@@ -9,7 +9,8 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
-@MappedSuperclass
+// Auditing 순수 JPA 이벤트로 해결
+@MappedSuperclass // 공통 매핑 정보
 @Getter
 public class JpaBaseEntity {
 
