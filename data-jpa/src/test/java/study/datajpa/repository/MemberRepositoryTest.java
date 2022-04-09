@@ -289,7 +289,7 @@ class MemberRepositoryTest {
 
     	//then
         assertTrue(memberRepository.findByUsername("member2").isEmpty());
-        //스냅샷 생성 안해 변경감지로 수정된게 반영되지 않음
+        //findReadOnlyByUsername 시 스냅샷 생성 안하기 때문에 변경감지로 수정된게 반영되지 않음
     }
 
     @Test
