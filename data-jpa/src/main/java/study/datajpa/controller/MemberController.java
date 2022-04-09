@@ -21,8 +21,8 @@ public class MemberController {
 
     private final MemberRepository memberRepository;
 
-    @PostConstruct
-    public void init() {
+//    @PostConstruct
+    public void initData() {
         for (int i=0; i<100; i++) {
             memberRepository.save(new Member("user" + i, i));
         }

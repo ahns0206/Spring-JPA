@@ -9,8 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDTO;
-import study.datajpa.entity.Member;
-import study.datajpa.entity.Team;
+import study.datajpa.entity.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -306,4 +305,53 @@ class MemberRepositoryTest {
     public void callCustom() {
         List<Member> result = memberRepository.findMemberCustom();
     }
+    
+    @Test
+    public void projectQuery() throws Exception {
+    	//given
+        Team teamA = new Team("teamA");
+        teamRepository.save(teamA);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamA);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+    	
+    	//when
+        List<UsernameOnlyOpen> usernameOnlyOpens = memberRepository.findProjectionsByUsername("member1",
+                UsernameOnlyOpen.class); // member만 조회
+        List<UsernameOnlyClose> usernameOnlyCloses = memberRepository.findProjectionsByUsername("member1",
+                UsernameOnlyClose.class); // member만 조회
+    
+    	//then
+        assertThat(usernameOnlyOpens.get(0).getUsername()).isEqualTo("member1 10 teamA"); // 연산이 필요하기에 team 도 추가 조회
+        assertThat(usernameOnlyCloses.get(0).getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void nativeQuery() {
+        //given
+        Team teamA = new Team("teamA");
+        teamRepository.save(teamA);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamA);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findByNativeQuery("member1");
+        Page<NestedClosedMemberProjection> memberProjections = memberRepository.findByNativeQueryPaging(PageRequest.of(0, 10));
+
+        //then
+        assertThat(members.get(0).getUsername()).isEqualTo("member1");
+        assertThat(memberProjections.getContent().get(0).getUsername()).isEqualTo("member1");
+    }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.NestedClosedMemberProjection;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
@@ -76,11 +77,27 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @EntityGraph("Member.all")
     List<Member> findEntityGraphByUsername(@Param("username") String username);
 
-    // query hint (단순 조회용이기에 스냅샷 생성 안함)
+    // query hint (단순 조회용이기에 스냅샷 생성 안함, @Transactional(readOnly = true)와 비슷한 개념임)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     List<Member> findReadOnlyByUsername(String username);
 
     // 배타 lock (수정전까지 select 못하게 막음)
     @Lock(LockModeType.WRITE)
     List<Member> findLockByUsername(String username);
+
+    // Projection (Generic type줘서, 동적으로 프로젝션 데이터 번경)
+    <T> List<T> findProjectionsByUsername(String username, Class<T> type);
+
+    // Native sql
+    @Query(value = "select * from member where username = ?", nativeQuery = true)
+    List<Member> findByNativeQuery(String username);
+
+    // Native sql (paging)
+    @Query(value = "SELECT m.member_id as id, m.username, t.name as teamName " +
+            "FROM member m left join team t",
+            countQuery = "SELECT count(*) from member",
+            nativeQuery = true)
+    Page<NestedClosedMemberProjection> findByNativeQueryPaging(Pageable pageable);
+
+
 }
