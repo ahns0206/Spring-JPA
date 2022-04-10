@@ -12,6 +12,7 @@ import study.querydsl.entity.Member;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
 import static study.querydsl.entity.QMember.member;
@@ -34,6 +35,26 @@ public class MemberJpaRepository {
 //        this.queryFactory = queryFactory;
 //    }
 
+    public void save(Member member) {
+        em.persist(member);
+    }
+
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(em.find(Member.class, id));
+    }
+
+    public List<Member> findAll() {
+        return em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+    }
+
+    public List<Member> findByUsername(String username) {
+        return em.createQuery("select m from Member m where m.username = :username", Member.class)
+                .setParameter("username", username)
+                .getResultList();
+    }
+
+
     public List<MemberTeamDTO> searchByDataJPA(MemberSearchCondition condition) {
         return em.createQuery("select new study.querydsl.dto.MemberTeamDTO(m.id, m.username, m.age, t.id, t.name) " +
                                 "from Member m left join m.team t" +
@@ -46,7 +67,7 @@ public class MemberJpaRepository {
                 .getResultList();
     }
 
-    public List<MemberTeamDTO> searchByBuilder(MemberSearchCondition condition) {
+    public List<MemberTeamDTO> searchByBooleanBuilder(MemberSearchCondition condition) {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (hasText(condition.getUsername())) {
@@ -75,7 +96,7 @@ public class MemberJpaRepository {
                 .fetch();
     }
 
-    public List<MemberTeamDTO> search(MemberSearchCondition condition) {
+    public List<MemberTeamDTO> searchByBooleanExpression(MemberSearchCondition condition) {
         return queryFactory
                 .select(new QMemberTeamDTO(
                         member.id.as("memberId"),
@@ -93,7 +114,7 @@ public class MemberJpaRepository {
                 .fetch();
     }
 
-    public List<Member> searchEntity(MemberSearchCondition condition) {
+    public List<Member> searchByBooleanExpressionEntity(MemberSearchCondition condition) {
         return queryFactory
                 .selectFrom(member)
                 .leftJoin(member.team, team)
