@@ -28,7 +28,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     }
 
     @Override
-    public List<MemberTeamDTO> search(MemberSearchCondition condition) {
+    public List<MemberTeamDTO> searchByBooleanExpression(MemberSearchCondition condition) {
         return queryFactory
                 .select(new QMemberTeamDTO(
                         member.id.as("memberId"),
@@ -64,7 +64,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetchResults(); // fetchResults: content + count
 
         List<MemberTeamDTO> content = results.getResults();
         long total = results.getTotal();
@@ -91,9 +91,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetch();
+                .fetch(); // fetch: content 만
 
-
+//      long total =
         JPAQuery<Member> countQuery = queryFactory
                 .selectFrom(member)
                 .leftJoin(member.team, team)
@@ -103,6 +103,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe())
                 );
+//              .fetchCount()
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
 //        return new PageImpl<>(content, pageable, total);

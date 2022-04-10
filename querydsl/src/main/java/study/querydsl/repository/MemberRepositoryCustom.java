@@ -8,7 +8,7 @@ import study.querydsl.dto.MemberTeamDTO;
 import java.util.List;
 
 public interface MemberRepositoryCustom {
-    List<MemberTeamDTO> search(MemberSearchCondition condition);
+    List<MemberTeamDTO> searchByBooleanExpression(MemberSearchCondition condition);
     Page<MemberTeamDTO> searchPageSimple(MemberSearchCondition condition, Pageable pageable);
-    Page<MemberTeamDTO> searchPageComplex(MemberSearchCondition condition, Pageable pageable);
+    Page<MemberTeamDTO> searchPageComplex(MemberSearchCondition condition, Pageable pageable); // searchPageSimple의 count 최적화
 }
