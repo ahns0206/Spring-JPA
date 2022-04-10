@@ -40,27 +40,79 @@ class MemberJpaRepositoryTest {
         em.persist(member4);
     }
 
+    /*
+     * Data JPA 로 조회
+     * team이 teamB면서 나이가 35~40인 member
+     * */
     @Test
-    public void searchTest() {
+    public void searchDataJpaByDto() {
+        //given
         MemberSearchCondition condition = new MemberSearchCondition();
         condition.setAgeGoe(35);
         condition.setAgeLoe(40);
         condition.setTeamName("teamB");
 
-        List<MemberTeamDTO> result = jpaRepository.searchByBuilder(condition);
+        //when
+        List<MemberTeamDTO> result = jpaRepository.searchByDataJPA(condition);
 
+        //then
         assertThat(result).extracting("username").containsExactly("member4");
     }
 
+    /*
+     * Data JPA 로 Entity 조회
+     * team이 teamB면서 나이가 35~40인 member
+     * */
     @Test
-    public void search() {
+    public void searchDataJpaByEntity() {
+        //given
         MemberSearchCondition condition = new MemberSearchCondition();
         condition.setAgeGoe(35);
         condition.setAgeLoe(40);
         condition.setTeamName("teamB");
 
+        //when
+        List<Member> result = jpaRepository.searchEntity(condition);
+
+        //then
+        assertThat(result).extracting("username").containsExactly("member4");
+    }
+
+    /*
+    * BooleanBuilder 로 조회
+    * team이 teamB면서 나이가 35~40인 member
+    * */
+    @Test
+    public void searchBooleanBuilder() {
+        //given
+        MemberSearchCondition condition = new MemberSearchCondition();
+        condition.setAgeGoe(35);
+        condition.setAgeLoe(40);
+        condition.setTeamName("teamB");
+
+        //when
+        List<MemberTeamDTO> result = jpaRepository.searchByBuilder(condition);
+
+        //then
+        assertThat(result).extracting("username").containsExactly("member4");
+    }
+
+    /*
+     * BooleanExpression 로 조회
+     * team이 teamB면서 나이가 35~40인 member
+     * */
+    @Test
+    public void searchBooleanExpression() {
+        //given
+        MemberSearchCondition condition = new MemberSearchCondition();
+        condition.setAgeGoe(35);
+        condition.setAgeLoe(40);
+        condition.setTeamName("teamB");
+
+        //when
         List<MemberTeamDTO> result = jpaRepository.search(condition);
 
+        //then
         assertThat(result).extracting("username").containsExactly("member4");
     }
 }

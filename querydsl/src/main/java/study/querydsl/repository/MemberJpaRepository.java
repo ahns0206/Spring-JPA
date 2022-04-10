@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDTO;
 import study.querydsl.dto.QMemberTeamDTO;
+import study.querydsl.entity.Member;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -33,10 +34,21 @@ public class MemberJpaRepository {
 //        this.queryFactory = queryFactory;
 //    }
 
+    public List<MemberTeamDTO> searchByDataJPA(MemberSearchCondition condition) {
+        return em.createQuery("select new study.querydsl.dto.MemberTeamDTO(m.id, m.username, m.age, t.id, t.name) " +
+                                "from Member m left join m.team t" +
+                                " where t.name = :name" +
+                                " and m.age between :ageGoe and :ageLoe"
+                        , MemberTeamDTO.class)
+                .setParameter("name", condition.getTeamName())
+                .setParameter("ageGoe", condition.getAgeGoe())
+                .setParameter("ageLoe", condition.getAgeLoe())
+                .getResultList();
+    }
 
     public List<MemberTeamDTO> searchByBuilder(MemberSearchCondition condition) {
-
         BooleanBuilder builder = new BooleanBuilder();
+
         if (hasText(condition.getUsername())) {
             builder.and(member.username.eq(condition.getUsername()));
         }
@@ -81,6 +93,19 @@ public class MemberJpaRepository {
                 .fetch();
     }
 
+    public List<Member> searchEntity(MemberSearchCondition condition) {
+        return queryFactory
+                .selectFrom(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageBetween(condition.getAgeGoe(), condition.getAgeLoe())
+//                        ageGoe(condition.getAgeGoe()),
+//                        ageLoe(condition.getAgeLoe())
+                )
+                .fetch();
+    }
+
     private BooleanExpression usernameEq(String username) {
         return hasText(username) ? member.username.eq(username) : null;
     }
@@ -95,5 +120,9 @@ public class MemberJpaRepository {
 
     private BooleanExpression ageLoe(Integer ageLoe) {
         return ageLoe != null ? member.age.loe(ageLoe) : null;
+    }
+
+    private BooleanExpression ageBetween(Integer ageGoe, Integer ageLoe) {
+        return ageGoe(ageGoe).and(ageLoe(ageLoe));
     }
 }

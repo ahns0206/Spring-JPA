@@ -12,7 +12,7 @@ public class MemberTeamDTO {
     private Long teamId;
     private String teamName;
 
-    @QueryProjection
+    @QueryProjection // 단점: querydsl에 종속적
     public MemberTeamDTO(Long memberId, String username, int age, Long teamId, String teamName) {
         this.memberId = memberId;
         this.username = username;
