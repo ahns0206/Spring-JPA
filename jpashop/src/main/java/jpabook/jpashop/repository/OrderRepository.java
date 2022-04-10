@@ -14,6 +14,8 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.util.StringUtils.hasText;
+
 @Repository
 @RequiredArgsConstructor
 public class OrderRepository {
@@ -114,16 +116,10 @@ public class OrderRepository {
     }
 
     private BooleanExpression nameLike(String userName) {
-        if(!StringUtils.hasText(userName)) {
-            return null;
-        }
-        return QMember.member.name.like(userName);
+        return hasText(userName) ? QMember.member.name.like(userName) :  null;
     }
 
     private BooleanExpression statusEq(OrderStatus statusCond) {
-        if(statusCond == null) {
-            return null;
-        }
-        return QOrder.order.status.eq(statusCond);
+        return statusCond != null ? QOrder.order.status.eq(statusCond) :  null;
     }
 }
