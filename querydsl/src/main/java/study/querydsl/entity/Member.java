@@ -3,11 +3,13 @@ package study.querydsl.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@ToString(of = {"id", "username", "age"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 

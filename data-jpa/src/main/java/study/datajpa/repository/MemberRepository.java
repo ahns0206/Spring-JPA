@@ -51,7 +51,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     // 페이징
     Page<Member> findPageByUsername(String username, Pageable pageable);     // count 쿼리 결과 포함
     Slice<Member> findSliceByUsername(String username, Pageable pageable);   // count 쿼리 없이 limit+1 까지만 가져옴
-    List<Member> findListByUsername(String username, Pageable pageable);    // cont 쿼리 사용안함
+    List<Member> findListByUsername(String username, Pageable pageable);    // count 쿼리 사용안함
 
     // count 쿼리에서 team join 하지 않도록 재지정
     @Query(value = "select m from Member m left join m.team t",

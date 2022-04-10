@@ -3,6 +3,7 @@ package study.querydsl.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDTO;
@@ -12,20 +13,26 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.springframework.util.StringUtils.hasText;
-import static org.springframework.util.StringUtils.isEmpty;
 import static study.querydsl.entity.QMember.member;
 import static study.querydsl.entity.QTeam.team;
 
 @Repository
+@RequiredArgsConstructor
 public class MemberJpaRepository {
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
-    public MemberJpaRepository(EntityManager em) {
-        this.em = em;
-        this.queryFactory = new JPAQueryFactory(em);
-    }
+//    public MemberJpaRepository(EntityManager em) {
+//        this.em = em;
+//        this.queryFactory = new JPAQueryFactory(em);
+//    }
+
+//    public MemberJpaRepository(EntityManager em, JPAQueryFactory queryFactory) {
+//        this.em = em;
+//        this.queryFactory = queryFactory;
+//    }
+
 
     public List<MemberTeamDTO> searchByBuilder(MemberSearchCondition condition) {
 
