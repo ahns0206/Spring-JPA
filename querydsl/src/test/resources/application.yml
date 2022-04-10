@@ -2,7 +2,7 @@ spring:
   profiles:
     active: test
   datasource:
-    url: jdbc:h2:tcp://localhost/~/querydsl
+    url: jdbc:h2:tcp://localhost/~/IdeaProjects/h2/querydsl
     username: sa
     password:
       driver-class-name: org.h2.Driver
@@ -12,7 +12,10 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        format_sql: true
+        format_sql: true # sout
+#        show_sql : true # sout -> log 쓰려고 주석
+#        use_sql_comments: true # JPQL 확인용
 
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL: debug # log
+#  org.hivernate.type: trace
