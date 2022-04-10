@@ -1,5 +1,6 @@
 package study.querydsl.repository;
 
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDTO;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
@@ -50,7 +52,7 @@ class MemberRepositoryTest {
         memberRepository.save(member);
 
         //when
-        Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findById(member.getId()).orElse(null);
         assertThat(findMember).isEqualTo(member);
 
         List<Member> result1 = memberRepository.findAll();
@@ -108,5 +110,19 @@ class MemberRepositoryTest {
         //then
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent()).extracting("username").containsExactly("member4");
+    }
+    
+    @Test
+    public void searchQuerydslPredicateExecutor() throws Exception {
+        // QuerydslPredicateExecutor<Member> extend 필수
+        // 단점: 조인 불가, Predicator를 넘겨야 함, 단순 조건만 가능하기에 실무에서는 사용하기 어려움
+        Predicate predicate =  QMember.member.age.between(10, 40).and(QMember.member.username.eq("member1"));
+
+        Iterable<Member> result = memberRepository.findAll(
+                predicate
+                );
+        for (Member member : result) {
+            System.out.println("member = " + member);
+        }
     }
 }
